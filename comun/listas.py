@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 from comun.funciones import cambiar_texto_a_palabras_en_mayusculas
+from urllib.parse import quote
 
 
 class Listas(object):
@@ -26,9 +27,10 @@ class Listas(object):
         return(cambiar_texto_a_palabras_en_mayusculas(texto))
 
     def validar_url(self, ruta):
-        """ Validar la URL, cambia la parte igual a insumos_ruta por url_ruta_base """
-        relativo = ruta[len(self.config.insumos_ruta):]
-        return(self.config.url_ruta_base + relativo)
+        """ Validar la URL """
+        url = self.config.url_ruta_base + ruta[len(self.config.insumos_ruta):] # Cambia la parte igual a insumos_ruta por url_ruta_base
+        url_seguro = quote(url, safe=':/') # URL con codigos seguros, ejemplo espacio a %20
+        return(url_seguro)
 
     def rastrear(self, ruta):
         """ De forma recursiva entrega todos los archivos en la ruta """
@@ -39,7 +41,7 @@ class Listas(object):
                 yield item
 
     def alimentar(self):
-        """ Alimenta la listado de archivos """
+        """ Alimentar el listado de archivos """
         if self.alimentado == False:
             if not os.path.exists(self.config.insumos_ruta) or not os.path.isdir(self.config.insumos_ruta):
                 Exception('No existe el directorio insumos_ruta.')

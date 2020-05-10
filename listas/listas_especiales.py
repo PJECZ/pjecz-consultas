@@ -7,7 +7,7 @@ class ListasEspeciales(Listas):
     """ Listas Especiales """
 
     def alimentar(self):
-        """ En el método heredado se alimenta el listado, aquí se alimenta la tabla """
+        """ Alimentar la tabla con las columnas de Listas Especiales """
         super().alimentar()
         if self.alimentado == False:
             for item in self.archivos:
