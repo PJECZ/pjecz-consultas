@@ -28,7 +28,8 @@ def cli(config, rama):
     # Rama
     config.rama = rama
     if config.rama != 'Listas Especiales' and config.rama != 'tests':
-        sys.exit('Error: La rama no está programada.')
+        click.echo('ERROR: Rama no programada.')
+        sys.exit(1)
     # Configuración
     settings = configparser.ConfigParser()
     settings.read('settings.ini')
@@ -38,7 +39,8 @@ def cli(config, rama):
         config.json_ruta = settings[config.rama]['json_ruta']
         config.url_ruta_base = settings[config.rama]['url_ruta_base']
     except KeyError:
-        sys.exit('Falta configuración en settings.ini')
+        sys.exit('ERROR: Falta configuración en settings.ini')
+        sys.exit(1)
     # Preparar la varable listas
     global listas
     if config.rama == 'Listas Especiales':
@@ -63,8 +65,12 @@ def crear(config):
     """ Crear """
     click.echo('Voy a crear...')
     global listas
-    click.echo(listas.guardar_archivo_json())
-    sys.exit(0)
+    if listas.guardar_archivo_json():
+        click.echo(f'Se guardó {config.json_ruta}')
+        sys.exit(0)
+    else:
+        click.echo('No hay cambios.')
+        sys.exit(1)
 
 
 cli.add_command(mostrar)

@@ -56,7 +56,7 @@ class Listas(object):
         return(json.dumps(salida))
 
     def guardar_archivo_json(self):
-        """ Guardar el contenido JSON en archivo """
+        """ Guardar el contenido JSON en archivo, entrega verdadero si hubo cambios """
         se_debe_guardar = False
         if os.path.exists(self.config.json_ruta):
             contenido = self.contenido_json()
@@ -67,9 +67,9 @@ class Listas(object):
         if se_debe_guardar:
             with open(self.config.json_ruta, 'w') as puntero:
                 puntero.write(self.contenido_json())
-            return('Guardado ' + os.path.basename(self.config.json_ruta))
+            return(True) # Si hubo cambios y guardó el archivo JSON
         else:
-            return('No hay cambios.')
+            return(False) # No hay cambios
 
     def __repr__(self):
         if self.alimentado == False:
