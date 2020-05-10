@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 from comun.funciones import cambiar_texto_a_palabras_en_mayusculas
+from urllib.parse import quote
 
 
 class Listas(object):
@@ -26,9 +27,10 @@ class Listas(object):
         return(cambiar_texto_a_palabras_en_mayusculas(texto))
 
     def validar_url(self, ruta):
-        """ Validar la URL, cambia la parte igual a insumos_ruta por url_ruta_base """
-        relativo = ruta[len(self.config.insumos_ruta):]
-        return(self.config.url_ruta_base + relativo)
+        """ Validar la URL """
+        url = self.config.url_ruta_base + ruta[len(self.config.insumos_ruta):] # Cambia la parte igual a insumos_ruta por url_ruta_base
+        url_seguro = quote(url, safe=':/') # URL con codigos seguros, ejemplo espacio a %20
+        return(url_seguro)
 
     def rastrear(self, ruta):
         """ De forma recursiva entrega todos los archivos en la ruta """
@@ -39,7 +41,7 @@ class Listas(object):
                 yield item
 
     def alimentar(self):
-        """ Alimenta la listado de archivos """
+        """ Alimentar el listado de archivos """
         if self.alimentado == False:
             if not os.path.exists(self.config.insumos_ruta) or not os.path.isdir(self.config.insumos_ruta):
                 Exception('No existe el directorio insumos_ruta.')
@@ -54,7 +56,7 @@ class Listas(object):
         return(json.dumps(salida))
 
     def guardar_archivo_json(self):
-        """ Guardar el contenido JSON en archivo """
+        """ Guardar el contenido JSON en archivo, entrega verdadero si hubo cambios """
         se_debe_guardar = False
         if os.path.exists(self.config.json_ruta):
             contenido = self.contenido_json()
@@ -65,9 +67,9 @@ class Listas(object):
         if se_debe_guardar:
             with open(self.config.json_ruta, 'w') as puntero:
                 puntero.write(self.contenido_json())
-            return('Guardado ' + os.path.basename(self.config.json_ruta))
+            return(True) # Si hubo cambios y guardó el archivo JSON
         else:
-            return('No hay cambios.')
+            return(False) # No hay cambios
 
     def __repr__(self):
         if self.alimentado == False:

@@ -4,10 +4,10 @@ from comun.listas import Listas
 
 
 class Tests(Listas):
-    """ Prueba local """
+    """ Pruebas """
 
     def alimentar(self):
-        """ En el método heredado se alimenta el listado, aquí se alimenta la tabla """
+        """ Alimentar la tabla con las columnas de Tests """
         super().alimentar()
         if self.alimentado == False:
             for item in self.archivos:
