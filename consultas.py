@@ -2,6 +2,7 @@ import click
 import configparser
 import sys
 from listas.listas_especiales import ListasEspeciales
+from listas.sentencias import Sentencias
 from tests.tests import Tests
 
 
@@ -26,10 +27,10 @@ listas = None
 def cli(config, rama):
     click.echo('Hola, ¡soy Consultas!')
     # Rama
-    config.rama = rama
-    if config.rama != 'Listas Especiales' and config.rama != 'tests':
+    if rama != 'Listas Especiales' and rama != 'Sentencias' and rama != 'tests':
         click.echo('ERROR: Rama no programada.')
         sys.exit(1)
+    config.rama = rama
     # Configuración
     settings = configparser.ConfigParser()
     settings.read('settings.ini')
@@ -41,10 +42,12 @@ def cli(config, rama):
     except KeyError:
         sys.exit('ERROR: Falta configuración en settings.ini')
         sys.exit(1)
-    # Preparar la varable listas
+    # Preparar la instancia listas, pasando la configuración
     global listas
     if config.rama == 'Listas Especiales':
         listas = ListasEspeciales(config)
+    elif config.rama == 'Sentencias':
+        listas = Sentencias(config)
     elif config.rama == 'tests':
         listas = Tests(config)
 
