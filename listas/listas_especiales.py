@@ -11,12 +11,15 @@ class ListasEspeciales(Listas):
         super().alimentar()
         if self.alimentado == False:
             for item in self.archivos:
+                # Separar fecha-autoridad.pdf
                 archivo = os.path.basename(item.path)
                 nombre = os.path.splitext(archivo)[0]
+                # Renglón
                 fecha = self.validar_fecha(nombre[:10])
                 autoridad = self.validar_autoridad(nombre[11:])
                 url = self.validar_url(item.path)
                 renglon = { 'Fecha': fecha, 'Juzgado': autoridad, 'Archivo': url }
+                # Acumular en la tabla
                 self.tabla.append(renglon)
             self.alimentado = True
 
