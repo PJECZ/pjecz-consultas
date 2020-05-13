@@ -1,7 +1,7 @@
 import click
 import configparser
 import sys
-from listas.listas_especiales import ListasEspeciales
+from listas.especiales import Especiales
 from listas.sentencias import Sentencias
 from tests.tests import Tests
 
@@ -10,10 +10,11 @@ class Config(object):
 
     def __init__(self):
         self.rama = ''
+        self.fecha_por_defecto = ''
+        self.profundidad = 0
         self.insumos_ruta = ''
         self.json_ruta = ''
         self.url_ruta_base = ''
-        self.fecha_por_defecto = ''
 
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
@@ -27,7 +28,7 @@ listas = None
 def cli(config, rama):
     click.echo('Hola, ¡soy Consultas!')
     # Rama
-    if rama != 'Listas Especiales' and rama != 'Sentencias' and rama != 'tests':
+    if rama != 'Especiales' and rama != 'Sentencias' and rama != 'tests':
         click.echo('ERROR: Rama no programada.')
         sys.exit(1)
     config.rama = rama
@@ -36,6 +37,7 @@ def cli(config, rama):
     settings.read('settings.ini')
     try:
         config.fecha_por_defecto = settings['Global']['fecha_por_defecto']
+        config.profundidad = int(settings[config.rama]['profundidad'])
         config.insumos_ruta = settings[config.rama]['insumos_ruta']
         config.json_ruta = settings[config.rama]['json_ruta']
         config.url_ruta_base = settings[config.rama]['url_ruta_base']
@@ -44,8 +46,8 @@ def cli(config, rama):
         sys.exit(1)
     # Preparar la instancia listas, pasando la configuración
     global listas
-    if config.rama == 'Listas Especiales':
-        listas = ListasEspeciales(config)
+    if config.rama == 'Especiales':
+        listas = Especiales(config)
     elif config.rama == 'Sentencias':
         listas = Sentencias(config)
     elif config.rama == 'tests':
