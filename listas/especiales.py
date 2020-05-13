@@ -1,9 +1,9 @@
 from comun.listas import Listas
-from listas.sentencia import Sentencia
+from listas.especial import Especial
 
 
-class Sentencias(Listas):
-    """ Sentencias """
+class Especiales(Listas):
+    """ Especiales """
 
     def alimentar(self):
         """ Alimentar """
@@ -11,14 +11,14 @@ class Sentencias(Listas):
         if self.alimentado == False:
             for item in self.directorios:
                 json_ruta = self.config.json_ruta + '/falta-definir-nombre.json'
-                self.listas.append(Sentencia(insumos_ruta=item, json_ruta=json_ruta))
+                self.listas.append(Especial(insumos_ruta=item, json_ruta=json_ruta))
             self.alimentado = True
 
     def __repr__(self):
         if self.alimentado == False:
             self.alimentar()
         salida = []
-        salida.append('<Sentencias>')
+        salida.append('<Especiales>')
         for lista in self.listas:
             salida.append(repr(lista))
         return('\n'.join(salida))
