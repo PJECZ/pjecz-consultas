@@ -1,6 +1,5 @@
 import os
 import tabulate
-from comun.funciones import validar_autoridad, validar_fecha, validar_url
 from comun.lista import Lista
 
 
@@ -15,23 +14,25 @@ class Sentencia(Lista):
                 # Separar .../autoridad/fecha-nnn-yyyy-nnn-yyyy-g.pdf
                 archivo = os.path.basename(item.path)
                 nombre = os.path.splitext(archivo)[0]
+                relativa_ruta = item.path[len(self.insumos_ruta):]
                 directorio = os.path.dirname(item.path)
                 carpetas = directorio.split('/')
                 separados = nombre[11:].split('-') # ['nnn', 'yyyy', 'nnn', 'yyyy', 'g']
-                # Renglón
-                fecha = validar_fecha(nombre[:10])
-                autoridad = validar_autoridad(carpetas[-1]) # Última carpeta
-                if len(separados) == 5 and separados[4] == 'g':
-                    p_genero = 'Sí'
-                else:
-                    p_genero = 'No'
+                # Campos
+                fecha = self.campo_fecha(nombre[:10])
                 if len(separados) >= 4:
-                    sentencia = f'{separados[0]}/{separados[1]}'
-                    expediente = f'{separados[2]}/{separados[3]}'
+                    sentencia = self.campo_expediente(separados[0], separados[1])
+                    expediente = self.campo_expediente(separados[2], separados[3])
                 else:
                     sentencia = 'nnn/YYYY'
                     expediente = 'nnn/YYYY'
-                url = validar_url(item.path)
+                if len(separados) > 4 and separados[4] == 'g':
+                    p_genero = 'Sí'
+                else:
+                    p_genero = 'No'
+                autoridad = self.campo_texto(carpetas[-1]) # Última carpeta
+                url = self.campo_descargable(relativa_ruta)
+                # Renglón
                 renglon = {
                     'Fecha': fecha,
                     'Juzgado/Tribunal': autoridad,
@@ -42,11 +43,14 @@ class Sentencia(Lista):
                     }
                 # Acumular en la tabla
                 self.tabla.append(renglon)
+            # Ya está alimentado
             self.alimentado = True
 
     def __repr__(self):
         if self.alimentado == False:
             self.alimentar()
+        if len(self.tabla) == 0:
+            return(f'<Sentencia> {self.insumos_ruta} SIN ARCHIVOS')
         tabla = [[
             'Fecha',
             'Juzgado/Tribunal',

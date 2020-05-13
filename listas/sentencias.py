@@ -9,9 +9,15 @@ class Sentencias(Listas):
         """ Alimentar """
         super().alimentar()
         if self.alimentado == False:
-            for item in self.directorios:
+            for insumos_ruta in self.directorios:
                 json_ruta = self.config.json_ruta + '/falta-definir-nombre.json'
-                self.listas.append(Sentencia(insumos_ruta=item, json_ruta=json_ruta))
+                url_ruta_base = self.config.url_ruta_base + insumos_ruta[len(self.config.insumos_ruta):]
+                self.listas.append(Sentencia(
+                    insumos_ruta=insumos_ruta,
+                    json_ruta=json_ruta,
+                    url_ruta_base=url_ruta_base,
+                    ))
+            # Ya está alimentado
             self.alimentado = True
 
     def __repr__(self):
