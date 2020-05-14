@@ -34,22 +34,22 @@ Ejecute para mostrar la ayuda
 
 Se solicita de la manera más atenta acatar los siguientes pasos:
 
-1.- Convertir el edicto a un **archivo PDF**
+1.- Convertir el edicto a un **archivo PDF**.
 
-2.- Cambiar el **nombre del archivo** de esta forma:
+2.- Cambiar el **nombre del archivo** con estos formatos y orden:
 
 - Fecha de publicación con formato AAAA-MM-DD (año-mes-día), ejemplo: 2020-05-18.
 - Número de expediente con formato NNN-AAAA (número-año), ejemplo: 1234-2020.
 - Número de edicto con formato NNN-AAAA (número-año), ejemplo: 5678-2020.
 - Texto que ayude a identificar el archivo, como el tipo de acto y/o nombres de las partes. En minúsculas, sin espacios, sin acentos y separados por guiones medios (-), ejemplo: juicio-sucesorio-maria-lopez
 
-**Ejemplo completo:** fecha del 28 de mayo 2020, expediente 1234/2020, edicto 5678/2020 y texto "Juicio Sucuesorio María López":
+**Ejemplo completo:** fecha del 28 de mayo 2020, expediente 1234/2020, edicto 5678/2020 y texto "Juicio Sucesorio María López":
 
     2020-05-28-1234-2020-5678-2020-juicio-sucesorio-maria-lopez.pdf
 
-Observe que cada dato se separa por guiones medios (-) y que NUNCA debe usar el carácter de diagonal (/) ni caracteres extraños.
+Observe que cada dato se separa por guiones medios (-) y que NUNCA debe usar el carácter de diagonal (/) ni caracteres extraños. Tampoco cambie el orden los elementos, porque esas piezas son tomadas de esa forma por un _software_.
 
-3.- Abra el **correo electrónico registrado de la Notaría.** El sistema clasifica el mensaje con su remitente; si usa una cuenta distinta, se clasificará como NO identificado.
+3.- Abra el **correo electrónico registrado de la Notaría.** El sistema clasifica el mensaje con su remitente; si usa una cuenta distinta NO podrá ser identificado.
 
 4.- En el asunto escriba:
 
@@ -60,7 +60,7 @@ Observe que cada dato se separa por guiones medios (-) y que NUNCA debe usar el 
 
     Distrito Torreón Notaría 05
 
-5.- Adjuntar el archivo PDF
+5.- Adjuntar el archivo PDF.
 
 6.- Enviar a <edictos@pjec.gob.mx>.
 
