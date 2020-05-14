@@ -42,7 +42,7 @@ def cli(config, rama):
         config.json_ruta = settings[config.rama]['json_ruta']
         config.url_ruta_base = settings[config.rama]['url_ruta_base']
     except KeyError:
-        sys.exit('ERROR: Falta configuración en settings.ini')
+        click.echo('ERROR: Falta configuración en settings.ini')
         sys.exit(1)
     # Preparar la instancia listas, pasando la configuración
     global listas
@@ -60,7 +60,12 @@ def mostrar(config):
     """ Mostrar en pantalla """
     click.echo('Voy a mostrar...')
     global listas
-    click.echo(repr(listas))
+    try:
+        listas.alimentar()
+        click.echo(repr(listas))
+    except Exception as e:
+        click.echo(str(e))
+        sys.exit(1)
     sys.exit(0)
 
 
@@ -69,13 +74,25 @@ def mostrar(config):
 def crear(config):
     """ Crear """
     click.echo('Voy a crear...')
+    cambios_contador = 0
     global listas
-    if listas.guardar_archivo_json():
-        click.echo(f'Se guardó {config.json_ruta}')
-        sys.exit(0)
-    else:
-        click.echo('No hay cambios.')
+    try:
+        listas.alimentar()
+        for lista in listas.listas:
+            if lista.guardar_archivo_json():
+                click.echo('Guardados {} renglones en {}.'.format(len(lista.archivos), lista.json_ruta))
+                cambios_contador += 1
+            else:
+                click.echo('Sin cambios en {}.'.format(lista.json_ruta))
+    except Exception as e:
+        click.echo(str(e))
         sys.exit(1)
+    if cambios_contador:
+        click.echo(f'Hubo que actualizar {cambios_contador} listas.')
+    else:
+        click.echo('No hay ningún cambio en todas las listas.')
+        sys.exit(1)
+    sys.exit(0)
 
 
 cli.add_command(mostrar)

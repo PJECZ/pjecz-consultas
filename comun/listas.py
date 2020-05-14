@@ -13,13 +13,15 @@ class Listas(object):
 
     def json_ruta_para_lista(self, insumos_ruta):
         """ Entregar la ruta donde guardar el archivo JSON para una lista """
-        relativa_ruta = insumos_ruta[len(self.config.insumos_ruta):]
-        return("{}/{}.json".format(self.config.json_ruta, cambiar_texto_a_identificador(relativa_ruta)))
+        if insumos_ruta == self.config.insumos_ruta:
+            nombre = cambiar_texto_a_identificador(self.config.rama)
+        else:
+            nombre = cambiar_texto_a_identificador(insumos_ruta[len(self.config.insumos_ruta):])
+        return(f"{self.config.json_ruta}/{nombre}.json")
 
     def url_ruta_base_para_lista(self, insumos_ruta):
         """ Entregar la URL base para las descargas de una lista """
-        relativa_ruta = insumos_ruta[len(self.config.insumos_ruta):]
-        return(self.config.url_ruta_base + relativa_ruta)
+        return(self.config.url_ruta_base + insumos_ruta[len(self.config.insumos_ruta):])
 
     def rastrear_directorios(self, ruta):
         """ Obtener todos los directorios en la ruta """
