@@ -1,3 +1,4 @@
+from comun.funciones import cambiar_texto_a_identificador
 from comun.listas import Listas
 from listas.especial import Especial
 
@@ -10,12 +11,10 @@ class Especiales(Listas):
         super().alimentar()
         if self.alimentado == False:
             for insumos_ruta in self.directorios:
-                json_ruta = self.config.json_ruta + '/falta-definir-nombre.json'
-                url_ruta_base = self.config.url_ruta_base + insumos_ruta[len(self.config.insumos_ruta):]
                 self.listas.append(Especial(
                     insumos_ruta=insumos_ruta,
-                    json_ruta=json_ruta,
-                    url_ruta_base=url_ruta_base,
+                    json_ruta=self.json_ruta_para_lista(insumos_ruta),
+                    url_ruta_base=self.url_ruta_base_para_lista(insumos_ruta),
                     ))
             # Ya está alimentado
             self.alimentado = True

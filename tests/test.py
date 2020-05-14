@@ -37,5 +37,5 @@ class Test(Lista):
         salida = []
         salida.append(f'<Test> {self.insumos_ruta}')
         salida.append(tabulate.tabulate(tabla, headers='firstrow'))
-        salida.append('Son {} archivos a escribir en {}.'.format(len(self.archivos), self.json_ruta))
+        salida.append('Son {} renglones en {}.\n'.format(len(self.archivos), self.json_ruta))
         return('\n'.join(salida))

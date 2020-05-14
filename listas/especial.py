@@ -37,5 +37,5 @@ class Especial(Lista):
         salida = []
         salida.append(f'<Especial> {self.insumos_ruta}')
         salida.append(tabulate.tabulate(tabla, headers='firstrow'))
-        salida.append('Son {} archivos.'.format(len(self.archivos)))
+        salida.append('Son {} renglones en {}.\n'.format(len(self.archivos), self.json_ruta))
         return('\n'.join(salida))

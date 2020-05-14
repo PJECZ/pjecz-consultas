@@ -9,8 +9,8 @@ class Lista(object):
     """ Lista """
 
     def __init__(self, insumos_ruta, json_ruta, url_ruta_base):
-        self.json_ruta = ''
         self.insumos_ruta = insumos_ruta
+        self.json_ruta = json_ruta
         self.url_ruta_base = url_ruta_base
         self.archivos = []
         self.tabla = []
