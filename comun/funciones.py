@@ -1,5 +1,3 @@
-import datetime
-import os
 import re
 import unicodedata
 
@@ -23,6 +21,7 @@ def cambiar_texto_a_identificador(texto):
     texto = cambiar_texto_a_sin_acentos(texto.lower())
     texto = re.sub('[/]+', '-', texto)
     texto = re.sub('[ ]+', '-', texto)
+    texto = texto.strip('-')
     texto = re.sub('[^0-9a-zA-Z_-]', '', texto)
     return(texto)
 

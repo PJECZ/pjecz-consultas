@@ -1,32 +1,28 @@
-import os
-import tabulate
 from comun.listas import Listas
+from tests.test import Test
 
 
 class Tests(Listas):
-    """ Pruebas """
+    """ Tests """
 
     def alimentar(self):
-        """ Alimentar la tabla con las columnas de Tests """
+        """ Alimentar """
         super().alimentar()
         if self.alimentado == False:
-            for item in self.archivos:
-                archivo = os.path.basename(item.path)
-                nombre = os.path.splitext(archivo)[0]
-                fecha = self.validar_fecha(nombre[:10])
-                autoridad = self.validar_autoridad(nombre[11:])
-                url = self.validar_url(item.path)
-                renglon = { 'Fecha': fecha, 'Juzgado': autoridad, 'Archivo': url }
-                self.tabla.append(renglon)
+            for insumos_ruta in self.directorios:
+                self.listas.append(Test(
+                    insumos_ruta=insumos_ruta,
+                    json_ruta=self.json_ruta_para_lista(insumos_ruta),
+                    url_ruta_base=self.url_ruta_base_para_lista(insumos_ruta),
+                    ))
+            # Ya está alimentado
             self.alimentado = True
 
     def __repr__(self):
-        super().__repr__()
-        tabla = [['Fecha', 'Juzgado', 'Archivo']]
-        for renglon in self.tabla:
-            tabla.append(renglon.values())
+        if self.alimentado == False:
+            self.alimentar()
         salida = []
         salida.append('<Tests>')
-        salida.append(tabulate.tabulate(tabla, headers='firstrow'))
-        salida.append('Son {} archivos.'.format(len(self.archivos)))
+        for lista in self.listas:
+            salida.append(repr(lista))
         return('\n'.join(salida))
