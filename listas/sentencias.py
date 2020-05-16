@@ -1,4 +1,3 @@
-from comun.funciones import cambiar_texto_a_identificador
 from comun.listas import Listas
 from listas.sentencia import Sentencia
 

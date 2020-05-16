@@ -1,5 +1,7 @@
 import click
 import configparser
+import os
+import subprocess
 import sys
 from listas.especiales import Especiales
 from listas.sentencias import Sentencias
@@ -15,6 +17,8 @@ class Config(object):
         self.insumos_ruta = ''
         self.json_ruta = ''
         self.url_ruta_base = ''
+        self.rclone_origen = ''
+        self.rclone_destino = ''
 
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
@@ -41,6 +45,8 @@ def cli(config, rama):
         config.insumos_ruta = settings[config.rama]['insumos_ruta']
         config.json_ruta = settings[config.rama]['json_ruta']
         config.url_ruta_base = settings[config.rama]['url_ruta_base']
+        config.rclone_origen = settings[config.rama]['rclone_origen']
+        config.rclone_destino = settings[config.rama]['rclone_destino']
     except KeyError:
         click.echo('ERROR: Falta configuración en settings.ini')
         sys.exit(1)
@@ -79,11 +85,48 @@ def crear(config):
     try:
         listas.alimentar()
         for lista in listas.listas:
+            json_archivo = os.path.basename(lista.json_ruta)
             if lista.guardar_archivo_json():
-                click.echo('Guardados {} renglones en {}.'.format(len(lista.archivos), lista.json_ruta))
+                click.echo(f'Guardados {len(lista.archivos)} renglones en {json_archivo}.')
                 cambios_contador += 1
             else:
-                click.echo('Sin cambios en {}.'.format(lista.json_ruta))
+                click.echo(f'Sin cambios en {json_archivo}.')
+    except Exception as e:
+        click.echo(str(e))
+        sys.exit(1)
+    if cambios_contador:
+        click.echo(f'Hubo que actualizar {cambios_contador} listas.')
+    else:
+        click.echo('No hay ningún cambio en todas las listas.')
+        sys.exit(1)
+    sys.exit(0)
+
+
+@cli.command()
+@pass_config
+def sincronizar(config):
+    """ Sincronizar bajando desde Archivista y subiendo a Google Storage """
+    click.echo('Voy a sincronizar...')
+    cambios_contador = 0
+    global listas
+    try:
+        listas.alimentar()
+        for lista in listas.listas:
+            # Bajar desde Archivista
+            os.chdir(lista.insumos_ruta)
+            relativa_ruta = lista.insumos_ruta[len(config.insumos_ruta) + 1:]
+            directorio = os.path.basename(os.path.normpath(relativa_ruta))
+            resultado = subprocess.call(f'echo rclone --progress sync "{config.rclone_origen}/{relativa_ruta}" "{directorio}"', shell=True)
+            # Si hay cambios
+            json_archivo = os.path.basename(lista.json_ruta)
+            if lista.guardar_archivo_json():
+                # Subir a Google Storage
+                click.echo('Guardados {} renglones en {}.'.format(len(lista.archivos), json_archivo))
+                resultado = subprocess.call(f'echo rclone --progress sync "{directorio}" "{config.rclone_destino}/{relativa_ruta}"', shell=True)
+                resultado = subprocess.call(f'echo rclone --progress copy "{json_archivo}" "{config.rclone_destino}/{json_archivo}"', shell=True)
+                cambios_contador += 1
+            else:
+                click.echo(f'Sin cambios en {json_archivo}.')
     except Exception as e:
         click.echo(str(e))
         sys.exit(1)
@@ -97,3 +140,4 @@ def crear(config):
 
 cli.add_command(mostrar)
 cli.add_command(crear)
+cli.add_command(sincronizar)
