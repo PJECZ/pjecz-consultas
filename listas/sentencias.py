@@ -22,7 +22,7 @@ class Sentencias(Listas):
         if self.alimentado == False:
             self.alimentar()
         salida = []
-        salida.append('<Sentencias>')
+        salida.append(f'<Sentencias> Profundidad: {self.config.profundidad}')
         for lista in self.listas:
             salida.append(repr(lista))
         return('\n'.join(salida))

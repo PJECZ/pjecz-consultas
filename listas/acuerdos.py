@@ -1,16 +1,16 @@
 from comun.listas import Listas
-from listas.especial import Especial
+from listas.acuerdo import Acuerdo
 
 
-class Especiales(Listas):
-    """ Especiales """
+class Acuerdos(Listas):
+    """ Acuerdos """
 
     def alimentar(self):
         """ Alimentar """
         super().alimentar()
         if self.alimentado == False:
             for insumos_ruta in self.directorios:
-                self.listas.append(Especial(
+                self.listas.append(Acuerdo(
                     insumos_ruta=insumos_ruta,
                     json_ruta=self.json_ruta_para_lista(insumos_ruta),
                     url_ruta_base=self.url_ruta_base_para_lista(insumos_ruta),
@@ -22,7 +22,7 @@ class Especiales(Listas):
         if self.alimentado == False:
             self.alimentar()
         salida = []
-        salida.append(f'<Especiales> Profundidad: {self.config.profundidad}')
+        salida.append(f'<Acuerdos> Profundidad: {self.config.profundidad}')
         for lista in self.listas:
             salida.append(repr(lista))
         return('\n'.join(salida))

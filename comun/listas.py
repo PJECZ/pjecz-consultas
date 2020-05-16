@@ -35,11 +35,15 @@ class Listas(object):
         return(directorios)
 
     def alimentar(self):
-        """ Alimentar el listado de archivos """
+        """ Alimentar el listado de archivos, soporta hasta 3 de profundidad """
         if self.alimentado == False:
+            if self.config.profundidad == 3:
+                for nivel1 in self.rastrear_directorios(self.config.insumos_ruta):
+                    for nivel2 in self.rastrear_directorios(nivel1):
+                        self.directorios.extend(self.rastrear_directorios(nivel2))
             if self.config.profundidad == 2:
-                for item in self.rastrear_directorios(self.config.insumos_ruta):
-                    self.directorios.extend(self.rastrear_directorios(item))
+                for nivel1 in self.rastrear_directorios(self.config.insumos_ruta):
+                    self.directorios.extend(self.rastrear_directorios(nivel1))
             elif self.config.profundidad == 1:
                 self.directorios = self.rastrear_directorios(self.config.insumos_ruta)
             elif self.config.profundidad == 0:

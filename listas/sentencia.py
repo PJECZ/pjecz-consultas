@@ -46,11 +46,8 @@ class Sentencia(Lista):
             # Ya está alimentado
             self.alimentado = True
 
-    def __repr__(self):
-        if self.alimentado == False:
-            self.alimentar()
-        if len(self.tabla) == 0:
-            return(f'<Sentencia> {self.insumos_ruta} SIN ARCHIVOS')
+    def tabla_texto(self):
+        """ Crear tabla para mostrar en la terminal """
         tabla = [[
             'Fecha',
             'Juzgado/Tribunal',
@@ -68,8 +65,12 @@ class Sentencia(Lista):
                 renglon['Expediente'],
                 renglon['Archivo'],
                 ])
-        salida = []
-        salida.append(f'<Sentencia> {self.insumos_ruta}')
-        salida.append(tabulate.tabulate(tabla, headers='firstrow'))
-        salida.append('Son {} renglones en {}.\n'.format(len(self.archivos), self.json_ruta))
-        return('\n'.join(salida))
+        return(tabulate.tabulate(tabla, headers='firstrow'))
+
+    def __repr__(self):
+        if self.alimentado == False:
+            self.alimentar()
+        if len(self.tabla) == 0:
+            return('<Lista de Sentencias> SIN ARCHIVOS en {}'.format(self.insumos_ruta))
+        else:
+            return('<Lista de Sentencias> con {} renglones en {}'.format(len(self.tabla), self.json_ruta))
