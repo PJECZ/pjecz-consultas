@@ -22,7 +22,7 @@ class Tests(Listas):
         if self.alimentado == False:
             self.alimentar()
         salida = []
-        salida.append('<Tests>')
+        salida.append(f'<Tests> Profundidad: {self.config.profundidad}')
         for lista in self.listas:
             salida.append(repr(lista))
         return('\n'.join(salida))

@@ -22,7 +22,7 @@ class Edictos(Listas):
         if self.alimentado == False:
             self.alimentar()
         salida = []
-        salida.append('<Edictos>')
+        salida.append(f'<Edictos> Profundidad: {self.config.profundidad}')
         for lista in self.listas:
             salida.append(repr(lista))
         return('\n'.join(salida))
