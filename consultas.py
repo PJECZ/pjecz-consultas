@@ -3,6 +3,8 @@ import configparser
 import os
 import subprocess
 import sys
+from listas.acuerdos import Acuerdos
+from listas.edictos import Edictos
 from listas.especiales import Especiales
 from listas.sentencias import Sentencias
 from tests.tests import Tests
@@ -27,12 +29,12 @@ listas = None
 
 
 @click.group()
-@click.option('--rama', default='tests', type=str, help='Rama a procesar')
+@click.option('--rama', default='tests', type=str, help='Acuerdos, Edictos, Especiales, Sentencias o tests')
 @pass_config
 def cli(config, rama):
     click.echo('Hola, ¡soy Consultas!')
     # Rama
-    if rama != 'Especiales' and rama != 'Sentencias' and rama != 'tests':
+    if not rama in ['Acuerdos', 'Edictos', 'Especiales', 'Sentencias', 'tests']:
         click.echo('ERROR: Rama no programada.')
         sys.exit(1)
     config.rama = rama
@@ -52,7 +54,11 @@ def cli(config, rama):
         sys.exit(1)
     # Preparar la instancia listas, pasando la configuración
     global listas
-    if config.rama == 'Especiales':
+    if config.rama == 'Acuerdos':
+        listas = Acuerdos(config)
+    elif config.rama == 'Edictos':
+        listas = Edictos(config)
+    elif config.rama == 'Especiales':
         listas = Especiales(config)
     elif config.rama == 'Sentencias':
         listas = Sentencias(config)

@@ -50,7 +50,7 @@ class Sentencia(Lista):
         if self.alimentado == False:
             self.alimentar()
         if len(self.tabla) == 0:
-            return(f'<Sentencia> {self.insumos_ruta} SIN ARCHIVOS')
+            return(f'<Lista de Sentencias> {self.insumos_ruta} SIN ARCHIVOS')
         tabla = [[
             'Fecha',
             'Juzgado/Tribunal',
@@ -69,7 +69,7 @@ class Sentencia(Lista):
                 renglon['Archivo'],
                 ])
         salida = []
-        salida.append(f'<Sentencia> {self.insumos_ruta}')
+        salida.append(f'<Lista de Sentencias> {self.insumos_ruta}')
         salida.append(tabulate.tabulate(tabla, headers='firstrow'))
         salida.append('Son {} renglones en {}.\n'.format(len(self.archivos), self.json_ruta))
         return('\n'.join(salida))
