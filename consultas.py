@@ -1,6 +1,7 @@
 import click
 import configparser
 import os
+import shutil
 import subprocess
 import sys
 from listas.acuerdos import Acuerdos
@@ -130,14 +131,14 @@ def sincronizar(config):
                 rclone_origen = f'{config.rclone_origen}/{relativa_ruta}'
                 rclone_destino = f'{config.rclone_destino}/{relativa_ruta}'
             # Bajar desde Archivista
-            resultado = subprocess.call(f'rclone sync "{rclone_origen}" "{directorio}"', shell=True)
+            resultado = subprocess.call(f'rclone sync "{rclone_origen}" .', shell=True)
             # Si hay cambios en el archivo JSON
             json_archivo = os.path.basename(lista.json_ruta)
             if lista.guardar_archivo_json():
                 # Subir a Google Storage
                 click.echo('Guardados {} renglones en {}'.format(len(lista.archivos), json_archivo))
-                resultado = subprocess.call(f'rclone sync "{directorio}" "{rclone_destino}"', shell=True)
-                resultado = subprocess.call(f'rclone copy "{json_archivo}" "{rclone_destino}/{json_archivo}"', shell=True)
+                shutil.copy(lista.json_ruta, 'lista.json')
+                resultado = subprocess.call(f'rclone sync . "{rclone_destino}"', shell=True)
                 cambios_contador += 1
             else:
                 click.echo(f'Sin cambios en {json_archivo}')
