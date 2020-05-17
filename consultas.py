@@ -93,15 +93,15 @@ def crear(config):
         for lista in listas.listas:
             json_archivo = os.path.basename(lista.json_ruta)
             if lista.guardar_archivo_json():
-                click.echo(f'Guardados {len(lista.archivos)} renglones en {json_archivo}.')
+                click.echo('Guardados {} renglones en {}'.format(len(lista.archivos), json_archivo))
                 cambios_contador += 1
             else:
-                click.echo(f'Sin cambios en {json_archivo}.')
+                click.echo(f'Sin cambios en {json_archivo}')
     except Exception as e:
         click.echo(str(e))
         sys.exit(1)
     if cambios_contador:
-        click.echo(f'Hubo que actualizar {cambios_contador} listas.')
+        click.echo(f'Hubo que crear {cambios_contador} listas.')
     else:
         click.echo('No hay ningún cambio en todas las listas.')
         sys.exit(1)
@@ -118,26 +118,34 @@ def sincronizar(config):
     try:
         listas.alimentar()
         for lista in listas.listas:
-            # Bajar desde Archivista
+            # Cuestión de directorios
             os.chdir(lista.insumos_ruta)
-            relativa_ruta = lista.insumos_ruta[len(config.insumos_ruta) + 1:]
-            directorio = os.path.basename(os.path.normpath(relativa_ruta))
-            resultado = subprocess.call(f'echo rclone --progress sync "{config.rclone_origen}/{relativa_ruta}" "{directorio}"', shell=True)
-            # Si hay cambios
+            if lista.insumos_ruta == config.insumos_ruta:
+                directorio = os.path.basename(os.path.normpath(config.insumos_ruta))
+                rclone_origen = config.rclone_origen
+                rclone_destino = config.rclone_destino
+            else:
+                relativa_ruta = lista.insumos_ruta[len(config.insumos_ruta) + 1:]
+                directorio = os.path.basename(os.path.normpath(relativa_ruta))
+                rclone_origen = f'{config.rclone_origen}/{relativa_ruta}'
+                rclone_destino = f'{config.rclone_destino}/{relativa_ruta}'
+            # Bajar desde Archivista
+            resultado = subprocess.call(f'rclone sync "{rclone_origen}" "{directorio}"', shell=True)
+            # Si hay cambios en el archivo JSON
             json_archivo = os.path.basename(lista.json_ruta)
             if lista.guardar_archivo_json():
                 # Subir a Google Storage
-                click.echo('Guardados {} renglones en {}.'.format(len(lista.archivos), json_archivo))
-                resultado = subprocess.call(f'echo rclone --progress sync "{directorio}" "{config.rclone_destino}/{relativa_ruta}"', shell=True)
-                resultado = subprocess.call(f'echo rclone --progress copy "{json_archivo}" "{config.rclone_destino}/{json_archivo}"', shell=True)
+                click.echo('Guardados {} renglones en {}'.format(len(lista.archivos), json_archivo))
+                resultado = subprocess.call(f'rclone sync "{directorio}" "{rclone_destino}"', shell=True)
+                resultado = subprocess.call(f'rclone copy "{json_archivo}" "{rclone_destino}/{json_archivo}"', shell=True)
                 cambios_contador += 1
             else:
-                click.echo(f'Sin cambios en {json_archivo}.')
+                click.echo(f'Sin cambios en {json_archivo}')
     except Exception as e:
         click.echo(str(e))
         sys.exit(1)
     if cambios_contador:
-        click.echo(f'Hubo que actualizar {cambios_contador} listas.')
+        click.echo(f'Hubo que sincronizar {cambios_contador} listas.')
     else:
         click.echo('No hay ningún cambio en todas las listas.')
         sys.exit(1)
