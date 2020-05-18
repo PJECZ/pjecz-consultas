@@ -35,10 +35,10 @@ listas = None
 def cli(config, rama):
     click.echo('Hola, ¡soy Consultas!')
     # Rama
-    if not rama in ['Acuerdos', 'Edictos', 'Especiales', 'Sentencias', 'tests']:
+    if not rama.title() in ['Acuerdos', 'Edictos', 'Especiales', 'Sentencias', 'Tests']:
         click.echo('ERROR: Rama no programada.')
         sys.exit(1)
-    config.rama = rama
+    config.rama = rama.title()
     # Configuración
     settings = configparser.ConfigParser()
     settings.read('settings.ini')
@@ -63,19 +63,38 @@ def cli(config, rama):
         listas = Especiales(config)
     elif config.rama == 'Sentencias':
         listas = Sentencias(config)
-    elif config.rama == 'tests':
+    elif config.rama == 'Tests':
         listas = Tests(config)
 
 
 @cli.command()
 @pass_config
+def informar(config):
+    """ Informar con una línea breve en pantalla """
+    click.echo('Voy a informar...')
+    global listas
+    try:
+        listas.alimentar()
+        for lista in listas.listas:
+            click.echo(repr(lista))
+    except Exception as e:
+        click.echo(str(e))
+        sys.exit(1)
+    sys.exit(0)
+
+
+@cli.command()
+@pass_config
 def mostrar(config):
-    """ Mostrar en pantalla """
+    """ Mostrar tablas con detalles de cada archivo en pantalla """
     click.echo('Voy a mostrar...')
     global listas
     try:
         listas.alimentar()
-        click.echo(repr(listas))
+        for lista in listas.listas:
+            click.echo(os.path.basename(lista.json_ruta))
+            click.echo(lista.tabla_texto())
+            click.echo()
     except Exception as e:
         click.echo(str(e))
         sys.exit(1)
@@ -85,7 +104,7 @@ def mostrar(config):
 @cli.command()
 @pass_config
 def crear(config):
-    """ Crear """
+    """ Crear los archivos JSON """
     click.echo('Voy a crear...')
     cambios_contador = 0
     global listas
@@ -112,7 +131,7 @@ def crear(config):
 @cli.command()
 @pass_config
 def sincronizar(config):
-    """ Sincronizar bajando desde Archivista y subiendo a Google Storage """
+    """ Sincronizar bajando desde Archivista y subiendo a Google """
     click.echo('Voy a sincronizar...')
     cambios_contador = 0
     global listas
@@ -131,14 +150,14 @@ def sincronizar(config):
                 rclone_origen = f'{config.rclone_origen}/{relativa_ruta}'
                 rclone_destino = f'{config.rclone_destino}/{relativa_ruta}'
             # Bajar desde Archivista
-            resultado = subprocess.call(f'rclone sync "{rclone_origen}" .', shell=True)
+            resultado = subprocess.call(f'rclone copy "{rclone_origen}" .', shell=True)
             # Si hay cambios en el archivo JSON
             json_archivo = os.path.basename(lista.json_ruta)
             if lista.guardar_archivo_json():
                 # Subir a Google Storage
                 click.echo('Guardados {} renglones en {}'.format(len(lista.archivos), json_archivo))
                 shutil.copy(lista.json_ruta, 'lista.json')
-                resultado = subprocess.call(f'rclone sync . "{rclone_destino}"', shell=True)
+                resultado = subprocess.call(f'rclone copy . "{rclone_destino}"', shell=True)
                 cambios_contador += 1
             else:
                 click.echo(f'Sin cambios en {json_archivo}')
@@ -153,6 +172,7 @@ def sincronizar(config):
     sys.exit(0)
 
 
+cli.add_command(informar)
 cli.add_command(mostrar)
 cli.add_command(crear)
 cli.add_command(sincronizar)

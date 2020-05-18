@@ -11,16 +11,38 @@ class Edicto(Lista):
         super().alimentar()
         if self.alimentado == False:
             for item in self.archivos:
-                # Separar fecha-descripcion.pdf
+                # Separar AAAA-MM-DD-NNN-AAAA-NNN-AAAA-descripcion-...pdf
                 archivo = os.path.basename(item.path)
                 nombre = os.path.splitext(archivo)[0]
+                separados = nombre.split('-')
+                # Tomar la fecha
+                fecha = self.campo_fecha(f'{separados[0]}-{separados[1]}-{separados[2]}')
+                # Tomar el expediente
+                if len(separados) >= 5:
+                    expediente = self.campo_expediente(separados[3], separados[4])
+                else:
+                    expediente = 'nnn/YYYY'
+                # Tomar el edicto
+                if len(separados) >= 7:
+                    edicto = self.campo_expediente(separados[5], separados[6])
+                else:
+                    edicto = 'nnn/YYYY'
+                # Tomar la descripción
+                if len(separados) >= 8:
+                    descripcion = ' '.join(separados[7:])
+                else:
+                    descripcion = ''
+                # Tomar el URL del archivo descargable
                 relativa_ruta = item.path[len(self.insumos_ruta):]
-                # Campos
-                fecha = self.campo_fecha(nombre[:10])
-                descripcion = self.campo_texto(nombre[11:])
                 url = self.campo_descargable(relativa_ruta)
                 # Renglón
-                renglon = { 'Fecha': fecha, 'Descripción': descripcion, 'Archivo': url }
+                renglon = {
+                    'Fecha': fecha,
+                    'Expediente': expediente,
+                    'Edicto': edicto,
+                    'Descripción': descripcion,
+                    'Archivo': url,
+                    }
                 # Acumular en la tabla
                 self.tabla.append(renglon)
             # Ya está alimentado
@@ -28,9 +50,16 @@ class Edicto(Lista):
 
     def tabla_texto(self):
         """ Crear tabla para mostrar en la terminal """
-        tabla = [['Fecha', 'Descripción', 'Archivo']]
+        if self.alimentado == False:
+            self.alimentar()
+        tabla = [['Fecha', 'Expediente', 'Edicto', 'Descripción']]
         for renglon in self.tabla:
-            tabla.append(renglon.values())
+            tabla.append([
+                renglon['Fecha'],
+                renglon['Expediente'],
+                renglon['Edicto'],
+                renglon['Descripción'],
+                ])
         return(tabulate.tabulate(tabla, headers='firstrow'))
 
     def __repr__(self):
@@ -39,4 +68,4 @@ class Edicto(Lista):
         if len(self.tabla) == 0:
             return('<Lista de Edictos> SIN ARCHIVOS en {}'.format(self.insumos_ruta))
         else:
-            return('<Lista de Edictos> con {} renglones en {}'.format(len(self.tabla), self.json_ruta))
+            return('<Lista de Edictos> con {} renglones en {}'.format(len(self.tabla), os.path.basename(self.json_ruta)))

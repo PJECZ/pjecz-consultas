@@ -30,7 +30,7 @@ class Lista(object):
 
     def campo_expediente(self, numero, ano):
         """ Campo con expediente NNN/AAAA """
-        return(f'numero/ano')
+        return(f'{numero}/{ano}')
 
     def campo_descargable(self, ruta):
         """ URL con codigos seguros, ejemplo espacio a %20 """
