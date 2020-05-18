@@ -11,34 +11,36 @@ class Sentencia(Lista):
         super().alimentar()
         if self.alimentado == False:
             for item in self.archivos:
-                # Separar .../autoridad/fecha-nnn-yyyy-nnn-yyyy-g.pdf
+                # Separar AAAA-MM-DD-NNN-AAAA-NNN-AAAA-g.pdf
                 archivo = os.path.basename(item.path)
                 nombre = os.path.splitext(archivo)[0]
-                relativa_ruta = item.path[len(self.insumos_ruta):]
-                directorio = os.path.dirname(item.path)
-                carpetas = directorio.split('/')
-                separados = nombre[11:].split('-') # ['nnn', 'yyyy', 'nnn', 'yyyy', 'g']
-                # Campos
-                fecha = self.campo_fecha(nombre[:10])
-                if len(separados) >= 4:
-                    sentencia = self.campo_expediente(separados[0], separados[1])
-                    expediente = self.campo_expediente(separados[2], separados[3])
+                separados = nombre.split('-')
+                # Tomar la fecha
+                fecha = self.campo_fecha(f'{separados[0]}-{separados[1]}-{separados[2]}')
+                # Tomar la sentencia
+                if len(separados) >= 5:
+                    sentencia = self.campo_expediente(separados[3], separados[4])
                 else:
                     sentencia = 'nnn/YYYY'
+                # Tomar el expediente
+                if len(separados) >= 7:
+                    expediente = self.campo_expediente(separados[5], separados[6])
+                else:
                     expediente = 'nnn/YYYY'
-                if len(separados) > 4 and separados[4] == 'g':
+                # Tomar el género
+                if len(separados) >= 8 and separados[7].lower() == 'g':
                     p_genero = 'Sí'
                 else:
                     p_genero = 'No'
-                autoridad = self.campo_texto(carpetas[-1]) # Última carpeta
+                # Tomar el URL del archivo descargable
+                relativa_ruta = item.path[len(self.insumos_ruta):]
                 url = self.campo_descargable(relativa_ruta)
                 # Renglón
                 renglon = {
                     'Fecha': fecha,
-                    'Juzgado/Tribunal': autoridad,
-                    'P. Género': p_genero,
                     'Sentencia': sentencia,
                     'Expediente': expediente,
+                    'P. Género': p_genero,
                     'Archivo': url,
                     }
                 # Acumular en la tabla
@@ -48,22 +50,15 @@ class Sentencia(Lista):
 
     def tabla_texto(self):
         """ Crear tabla para mostrar en la terminal """
-        tabla = [[
-            'Fecha',
-            'Juzgado/Tribunal',
-            'P. Género',
-            'Sentencia',
-            'Expediente',
-            'Archivo',
-            ]]
+        if self.alimentado == False:
+            self.alimentar()
+        tabla = [['Fecha', 'Sentencia', 'Expediente', 'P. Género']]
         for renglon in self.tabla:
             tabla.append([
                 renglon['Fecha'],
-                renglon['Juzgado/Tribunal'],
-                renglon['P. Género'],
                 renglon['Sentencia'],
                 renglon['Expediente'],
-                renglon['Archivo'],
+                renglon['P. Género'],
                 ])
         return(tabulate.tabulate(tabla, headers='firstrow'))
 

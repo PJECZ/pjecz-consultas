@@ -35,10 +35,10 @@ listas = None
 def cli(config, rama):
     click.echo('Hola, ¡soy Consultas!')
     # Rama
-    if not rama in ['Acuerdos', 'Edictos', 'Especiales', 'Sentencias', 'tests']:
+    if not rama.title() in ['Acuerdos', 'Edictos', 'Especiales', 'Sentencias', 'Tests']:
         click.echo('ERROR: Rama no programada.')
         sys.exit(1)
-    config.rama = rama
+    config.rama = rama.title()
     # Configuración
     settings = configparser.ConfigParser()
     settings.read('settings.ini')
@@ -63,7 +63,7 @@ def cli(config, rama):
         listas = Especiales(config)
     elif config.rama == 'Sentencias':
         listas = Sentencias(config)
-    elif config.rama == 'tests':
+    elif config.rama == 'Tests':
         listas = Tests(config)
 
 
@@ -75,7 +75,10 @@ def mostrar(config):
     global listas
     try:
         listas.alimentar()
-        click.echo(repr(listas))
+        for lista in listas.listas:
+            click.echo(os.path.basename(lista.json_ruta))
+            click.echo(lista.tabla_texto())
+            click.echo()
     except Exception as e:
         click.echo(str(e))
         sys.exit(1)
