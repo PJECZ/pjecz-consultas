@@ -39,4 +39,4 @@ class Acuerdo(Lista):
         if len(self.tabla) == 0:
             return('<Lista de Acuerdos> SIN ARCHIVOS en {}'.format(self.insumos_ruta))
         else:
-            return('<Lista de Acuerdos> con {} renglones en {}'.format(len(self.tabla), self.json_ruta))
+            return('<Lista de Acuerdos> con {} renglones en {}'.format(len(self.tabla), os.path.basename(self.json_ruta)))

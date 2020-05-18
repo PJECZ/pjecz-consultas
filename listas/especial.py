@@ -39,4 +39,4 @@ class Especial(Lista):
         if len(self.tabla) == 0:
             return('<Lista Especial> SIN ARCHIVOS en {}'.format(self.insumos_ruta))
         else:
-            return('<Lista Especial> con {} renglones en {}'.format(len(self.tabla), self.json_ruta))
+            return('<Lista Especial> con {} renglones en {}'.format(len(self.tabla), os.path.basename(self.json_ruta)))

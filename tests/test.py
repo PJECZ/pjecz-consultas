@@ -68,4 +68,4 @@ class Test(Lista):
         if len(self.tabla) == 0:
             return('<Lista de Test> SIN ARCHIVOS en {}'.format(self.insumos_ruta))
         else:
-            return('<Lista de Test> con {} renglones en {}'.format(len(self.tabla), self.json_ruta))
+            return('<Lista de Test> con {} renglones en {}'.format(len(self.tabla), os.path.basename(self.json_ruta)))
