@@ -50,9 +50,16 @@ class Edicto(Lista):
 
     def tabla_texto(self):
         """ Crear tabla para mostrar en la terminal """
-        tabla = [['Fecha', 'Expediente', 'Edicto', 'Descripción', 'Archivo']]
+        if self.alimentado == False:
+            self.alimentar()
+        tabla = [['Fecha', 'Expediente', 'Edicto', 'Descripción']]
         for renglon in self.tabla:
-            tabla.append(renglon.values())
+            tabla.append([
+                renglon['Fecha'],
+                renglon['Expediente'],
+                renglon['Edicto'],
+                renglon['Descripción'],
+                ])
         return(tabulate.tabulate(tabla, headers='firstrow'))
 
     def __repr__(self):
