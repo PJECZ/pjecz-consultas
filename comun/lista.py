@@ -22,7 +22,7 @@ class Lista(object):
             datetime.datetime.strptime(texto, '%Y-%m-%d')
             return(texto)
         except ValueError:
-            return('2020-01-01')
+            return('2000-01-01') # Fecha por defecto
 
     def campo_texto(self, texto):
         """ Poner en mayúculas la primer letra de cada palabra y cambiar los guiones por espacios """
