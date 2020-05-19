@@ -43,7 +43,7 @@ class Sentencia(Lista):
                     'Fecha': fecha,
                     'Sentencia': sentencia,
                     'Expediente': expediente,
-                    'P. Género': p_genero,
+                    'Genero': p_genero,
                     'Archivo': url,
                     }
                 # Acumular en la tabla
@@ -55,7 +55,7 @@ class Sentencia(Lista):
         """ Crear tabla para mostrar en la terminal """
         if self.alimentado == False:
             self.alimentar()
-        tabla = [['Fecha', 'Sentencia', 'Expediente', 'P. Género']]
+        tabla = [['Fecha', 'Sentencia', 'Expediente', 'Genero']]
         for renglon in self.tabla:
             tabla.append([
                 renglon['Fecha'],
