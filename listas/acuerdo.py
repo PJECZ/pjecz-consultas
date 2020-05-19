@@ -14,10 +14,19 @@ class Acuerdo(Lista):
                 # Separar fecha-descripcion.pdf
                 archivo = os.path.basename(item.path)
                 nombre = os.path.splitext(archivo)[0]
+                separados = nombre.split('-')
+                # Tomar la fecha
+                if len(separados) >= 3:
+                    fecha = self.campo_fecha(f'{separados[0]}-{separados[1]}-{separados[2]}')
+                else:
+                    fecha = '2000-01-01' # Fecha por defecto
+                # Tomar la descripción
+                if len(separados) >= 4:
+                    descripcion = ' '.join(separados[3:])
+                else:
+                    descripcion = ''
+                # Tomar el URL del archivo descargable
                 relativa_ruta = item.path[len(self.insumos_ruta):]
-                # Campos
-                fecha = self.campo_fecha(nombre[:10])
-                descripcion = self.campo_texto(nombre[11:])
                 url = self.campo_descargable(relativa_ruta)
                 # Renglón
                 renglon = { 'Fecha': fecha, 'Descripción': descripcion, 'Archivo': url }

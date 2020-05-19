@@ -16,7 +16,10 @@ class Edicto(Lista):
                 nombre = os.path.splitext(archivo)[0]
                 separados = nombre.split('-')
                 # Tomar la fecha
-                fecha = self.campo_fecha(f'{separados[0]}-{separados[1]}-{separados[2]}')
+                if len(separados) >= 3:
+                    fecha = self.campo_fecha(f'{separados[0]}-{separados[1]}-{separados[2]}')
+                else:
+                    fecha = '2000-01-01' # Fecha por defecto
                 # Tomar el expediente
                 if len(separados) >= 5:
                     expediente = self.campo_expediente(separados[3], separados[4])
