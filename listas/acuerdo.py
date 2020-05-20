@@ -22,7 +22,7 @@ class Acuerdo(Lista):
                     fecha = '2000-01-01' # Fecha por defecto
                 # Tomar la descripción
                 if len(separados) >= 4:
-                    descripcion = ' '.self.campo_texto(join(separados[3:]))
+                    descripcion = self.campo_texto(' '.join(separados[3:]))
                 else:
                     descripcion = ''
                 # Tomar el URL del archivo descargable

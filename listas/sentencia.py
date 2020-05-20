@@ -24,12 +24,12 @@ class Sentencia(Lista):
                 if len(separados) >= 5:
                     sentencia = self.campo_expediente(separados[3], separados[4])
                 else:
-                    sentencia = 'nnn/YYYY'
+                    sentencia = ''
                 # Tomar el expediente
                 if len(separados) >= 7:
                     expediente = self.campo_expediente(separados[5], separados[6])
                 else:
-                    expediente = 'nnn/YYYY'
+                    expediente = ''
                 # Tomar el género
                 if len(separados) >= 8 and separados[7].lower() == 'g':
                     p_genero = 'Sí'
