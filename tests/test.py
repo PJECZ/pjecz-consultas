@@ -24,7 +24,7 @@ class Test(Lista):
                 if len(separados) >= 5:
                     expediente = self.campo_expediente(separados[3], separados[4])
                 else:
-                    expediente = 'nnn/YYYY'
+                    expediente = ''
                 # Tomar la descripción
                 if len(separados) >= 6:
                     descripcion = self.campo_texto(' '.join(separados[5:]))
