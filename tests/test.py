@@ -11,7 +11,7 @@ class Test(Lista):
         super().alimentar()
         if self.alimentado == False:
             for item in self.archivos:
-                # Separar AAAA-MM-DD-NNN-AAAA-NNN-AAAA-g.pdf
+                # Separar AAAA-MM-DD-NNN-AAAA-NNN-AAAA-descripcion-...pdf
                 archivo = os.path.basename(item.path)
                 nombre = os.path.splitext(archivo)[0]
                 separados = nombre.split('-')
@@ -20,30 +20,24 @@ class Test(Lista):
                     fecha = self.campo_fecha(f'{separados[0]}-{separados[1]}-{separados[2]}')
                 else:
                     fecha = '2000-01-01' # Fecha por defecto
-                # Tomar la sentencia
-                if len(separados) >= 5:
-                    sentencia = self.campo_expediente(separados[3], separados[4])
-                else:
-                    sentencia = 'nnn/YYYY'
                 # Tomar el expediente
-                if len(separados) >= 7:
-                    expediente = self.campo_expediente(separados[5], separados[6])
+                if len(separados) >= 5:
+                    expediente = self.campo_expediente(separados[3], separados[4])
                 else:
                     expediente = 'nnn/YYYY'
-                # Tomar el género
-                if len(separados) >= 8 and separados[7].lower() == 'g':
-                    p_genero = 'Sí'
+                # Tomar la descripción
+                if len(separados) >= 6:
+                    descripcion = self.campo_texto(' '.join(separados[5:]))
                 else:
-                    p_genero = 'No'
+                    descripcion = ''
                 # Tomar el URL del archivo descargable
                 relativa_ruta = item.path[len(self.insumos_ruta):]
                 url = self.campo_descargable(relativa_ruta)
                 # Renglón
                 renglon = {
                     'Fecha': fecha,
-                    'Sentencia': sentencia,
                     'Expediente': expediente,
-                    'P. Género': p_genero,
+                    'Descripcion': descripcion,
                     'Archivo': url,
                     }
                 # Acumular en la tabla
@@ -55,13 +49,12 @@ class Test(Lista):
         """ Crear tabla para mostrar en la terminal """
         if self.alimentado == False:
             self.alimentar()
-        tabla = [['Fecha', 'Sentencia', 'Expediente', 'P. Género']]
+        tabla = [['Fecha', 'Expediente', 'Descripcion']]
         for renglon in self.tabla:
             tabla.append([
                 renglon['Fecha'],
-                renglon['Sentencia'],
                 renglon['Expediente'],
-                renglon['P. Género'],
+                renglon['Descripcion'],
                 ])
         return(tabulate.tabulate(tabla, headers='firstrow'))
 

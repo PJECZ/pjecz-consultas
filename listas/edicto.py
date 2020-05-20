@@ -25,14 +25,9 @@ class Edicto(Lista):
                     expediente = self.campo_expediente(separados[3], separados[4])
                 else:
                     expediente = 'nnn/YYYY'
-                # Tomar el edicto
-                if len(separados) >= 7:
-                    edicto = self.campo_expediente(separados[5], separados[6])
-                else:
-                    edicto = 'nnn/YYYY'
                 # Tomar la descripción
-                if len(separados) >= 8:
-                    descripcion = ' '.join(separados[7:])
+                if len(separados) >= 6:
+                    descripcion = self.campo_texto(' '.join(separados[5:]))
                 else:
                     descripcion = ''
                 # Tomar el URL del archivo descargable
@@ -42,7 +37,6 @@ class Edicto(Lista):
                 renglon = {
                     'Fecha': fecha,
                     'Expediente': expediente,
-                    'Edicto': edicto,
                     'Descripcion': descripcion,
                     'Archivo': url,
                     }
@@ -55,12 +49,11 @@ class Edicto(Lista):
         """ Crear tabla para mostrar en la terminal """
         if self.alimentado == False:
             self.alimentar()
-        tabla = [['Fecha', 'Expediente', 'Edicto', 'Descripcion']]
+        tabla = [['Fecha', 'Expediente', 'Descripcion']]
         for renglon in self.tabla:
             tabla.append([
                 renglon['Fecha'],
                 renglon['Expediente'],
-                renglon['Edicto'],
                 renglon['Descripcion'],
                 ])
         return(tabulate.tabulate(tabla, headers='firstrow'))
