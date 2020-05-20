@@ -43,7 +43,7 @@ class Edicto(Lista):
                     'Fecha': fecha,
                     'Expediente': expediente,
                     'Edicto': edicto,
-                    'Descripción': descripcion,
+                    'Descripcion': descripcion,
                     'Archivo': url,
                     }
                 # Acumular en la tabla
@@ -55,13 +55,13 @@ class Edicto(Lista):
         """ Crear tabla para mostrar en la terminal """
         if self.alimentado == False:
             self.alimentar()
-        tabla = [['Fecha', 'Expediente', 'Edicto', 'Descripción']]
+        tabla = [['Fecha', 'Expediente', 'Edicto', 'Descripcion']]
         for renglon in self.tabla:
             tabla.append([
                 renglon['Fecha'],
                 renglon['Expediente'],
                 renglon['Edicto'],
-                renglon['Descripción'],
+                renglon['Descripcion'],
                 ])
         return(tabulate.tabulate(tabla, headers='firstrow'))
 
