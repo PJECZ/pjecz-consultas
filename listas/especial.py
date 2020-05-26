@@ -28,6 +28,8 @@ class Especial(Lista):
 
     def tabla_texto(self):
         """ Crear tabla para mostrar en la terminal """
+        if self.alimentado == False:
+            self.alimentar()
         tabla = [['Fecha', 'Juzgado', 'Archivo']]
         for renglon in self.tabla:
             tabla.append(renglon.values())
