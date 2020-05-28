@@ -28,6 +28,17 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 
 listas = None
 
+def rclone_directorios(config, lista_insumos_ruta):
+    """ Entrega los directorios para rclone """
+    if lista_insumos_ruta == config.insumos_ruta:
+        rclone_origen = config.rclone_origen
+        rclone_destino = config.rclone_destino
+    else:
+        relativa_ruta = lista_insumos_ruta[len(config.insumos_ruta) + 1:]
+        rclone_origen = f'{config.rclone_origen}/{relativa_ruta}'
+        rclone_destino = f'{config.rclone_destino}/{relativa_ruta}'
+    return(rclone_origen, rclone_destino)
+
 
 @click.group()
 @click.option('--rama', default='tests', type=str, help='Acuerdos, Edictos, Especiales, Sentencias o tests')
@@ -121,18 +132,18 @@ def crear(config):
         click.echo(str(e))
         sys.exit(1)
     if cambios_contador:
-        click.echo(f'Hubo que crear {cambios_contador} listas.')
+        click.echo(f'Se crearon {cambios_contador} listas.')
+        sys.exit(0)
     else:
         click.echo('No hay ningún cambio en todas las listas.')
         sys.exit(1)
-    sys.exit(0)
 
 
 @cli.command()
 @pass_config
-def sincronizar(config):
-    """ Sincronizar bajando desde Archivista y subiendo a Google """
-    click.echo('Voy a sincronizar...')
+def subir(config):
+    """ Subir a Google Storage """
+    click.echo('Voy a subir a Google Storage...')
     cambios_contador = 0
     global listas
     try:
@@ -140,17 +151,43 @@ def sincronizar(config):
         for lista in listas.listas:
             # Cuestión de directorios
             os.chdir(lista.insumos_ruta)
-            if lista.insumos_ruta == config.insumos_ruta:
-                directorio = os.path.basename(os.path.normpath(config.insumos_ruta))
-                rclone_origen = config.rclone_origen
-                rclone_destino = config.rclone_destino
+            rclone_origen, rclone_destino = rclone_directorios(config, lista.insumos_ruta)
+            # Si hay cambios en el archivo JSON
+            json_archivo = os.path.basename(lista.json_ruta)
+            if lista.guardar_archivo_json():
+                # Subir a Google Storage
+                click.echo('Guardados {} renglones en {}'.format(len(lista.archivos), json_archivo))
+                shutil.copy(lista.json_ruta, 'lista.json')
+                resultado = subprocess.call(f'rclone --max-age 24h copy . "{rclone_destino}"', shell=True)
+                cambios_contador += 1
             else:
-                relativa_ruta = lista.insumos_ruta[len(config.insumos_ruta) + 1:]
-                directorio = os.path.basename(os.path.normpath(relativa_ruta))
-                rclone_origen = f'{config.rclone_origen}/{relativa_ruta}'
-                rclone_destino = f'{config.rclone_destino}/{relativa_ruta}'
+                click.echo(f'Sin cambios en {json_archivo}')
+    except Exception as e:
+        click.echo(str(e))
+        sys.exit(1)
+    if cambios_contador:
+        click.echo(f'Se subieron {cambios_contador} listas.')
+        sys.exit(0)
+    else:
+        click.echo('No hay ningún cambio en todas las listas.')
+        sys.exit(1)
+
+
+@cli.command()
+@pass_config
+def sincronizar(config):
+    """ Bajar desde Archivista y subir a Google Storage """
+    click.echo('Voy a bajar desde Archivista y subir a Google Storage...')
+    cambios_contador = 0
+    global listas
+    try:
+        listas.alimentar()
+        for lista in listas.listas:
+            # Cuestión de directorios
+            os.chdir(lista.insumos_ruta)
+            rclone_origen, rclone_destino = rclone_directorios(config, lista.insumos_ruta)
             # Bajar desde Archivista
-            resultado = subprocess.call(f'rclone copy "{rclone_origen}" .', shell=True)
+            resultado = subprocess.call(f'rclone sync "{rclone_origen}" .', shell=True)
             # Si hay cambios en el archivo JSON
             json_archivo = os.path.basename(lista.json_ruta)
             if lista.guardar_archivo_json():
@@ -165,14 +202,15 @@ def sincronizar(config):
         click.echo(str(e))
         sys.exit(1)
     if cambios_contador:
-        click.echo(f'Hubo que sincronizar {cambios_contador} listas.')
+        click.echo(f'Se sincronizaron {cambios_contador} listas.')
+        sys.exit(0)
     else:
         click.echo('No hay ningún cambio en todas las listas.')
         sys.exit(1)
-    sys.exit(0)
 
 
 cli.add_command(informar)
 cli.add_command(mostrar)
 cli.add_command(crear)
+cli.add_command(subir)
 cli.add_command(sincronizar)
