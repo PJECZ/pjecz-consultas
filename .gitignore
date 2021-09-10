@@ -1,5 +1,10 @@
-*.egg-info
-*.pyc
-__pycache__
+*.csv
+*.egg-info/
+*.log
+*.py[cod]
 .directory
-settings.ini
+.DS_STORE
+__pycache__/
+/.vscode/settings.json
+/settings.ini
+/venv/
